@@ -19,10 +19,10 @@ import {
   AlertTriangle,
   XCircle
 } from 'lucide-react';
-import { supabase, uploadFile, getFileUrl } from '../utils/supabaseClient';
-import Swal from './swal';
-import ProfileModal from '../components/ProfileModal';
-import CustomFaceCapture from '../components/CustomFaceCapture';
+import { supabase, uploadFile, getFileUrl } from '../../utils/supabaseClient';
+import Swal from '../../utils/swal';
+import ProfileModal from '../../components/ProfileModal';
+import CustomFaceCapture from '../../components/CustomFaceCapture';
 import AdminSidebar from '../components/AdminSidebar';
 
 const UserManagement = () => {
