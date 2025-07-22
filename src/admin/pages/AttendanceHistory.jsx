@@ -144,16 +144,6 @@ const AttendanceHistory = () => {
       filtered = filtered.filter(record => record.status === filters.status);
     }
 
-    // Hilangkan duplikasi absensi 'Tidak Hadir' (jam sama, status sama, lokasi sama)
-    const seen = new Set();
-    filtered = filtered.filter(record => {
-      if (record.status !== 'tidak_hadir') return true;
-      const key = `${record.timestamp}|${record.status}|${record.latitude || ''}|${record.longitude || ''}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
     setFilteredData(filtered);
   };
 
