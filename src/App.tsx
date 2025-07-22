@@ -3,17 +3,19 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavig
 import { supabase } from './utils/supabaseClient';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import AttendanceHistory from './pages/AttendanceHistory';
-import AdminPanel from './pages/AdminPanel';
-import UserManagement from './pages/UserManagement';
-import SalaryPaymentManagement from './pages/SalaryPaymentManagement';
-import DepartmentManagement from './pages/DepartmentManagement';
-import PositionManagement from './pages/PositionManagement';
-import ProfileSetup from './pages/ProfileSetup';
-import LocationSettings from './pages/LocationSettings';
-import BankManagement from './pages/BankManagement';
-import AttendanceManagementByDate from './pages/AttendanceManagementByDate';
+import Dashboard from './employee/pages/Dashboard';
+import ProfileSetup from './employee/pages/ProfileSetup';
+import ProfileEditor from './employee/pages/ProfileEditor';
+import AdminPanel from './admin/pages/AdminPanel';
+import UserManagement from './admin/pages/UserManagement';
+import SalaryPaymentManagement from './admin/pages/SalaryPaymentManagement';
+import DepartmentManagement from './admin/pages/DepartmentManagement';
+import PositionManagement from './admin/pages/PositionManagement';
+import LocationSettings from './admin/pages/LocationSettings';
+import BankManagement from './admin/pages/BankManagement';
+import AttendanceManagementByDate from './admin/pages/AttendanceManagementByDate';
+import AttendanceHistory from './admin/pages/AttendanceHistory';
+import AdminLayout from './admin/components/AdminLayout';
 import { LanguageProvider } from './utils/languageContext';
 
 function App() {
@@ -81,7 +83,7 @@ function AppContent() {
   useEffect(() => {
     // Check if the current path doesn't match any of our routes
     const validPaths = [
-      '/login', '/register', '/dashboard', '/profile-setup', 
+      '/login', '/register', '/dashboard', '/profile-setup', '/profile-editor',
       '/history', '/admin', '/admin/users', '/admin/departments', 
       '/admin/positions', '/admin/salary-payment', '/admin/location', 
       '/admin/bank', '/admin/attendance', '/'
@@ -136,6 +138,13 @@ function AppContent() {
     );
   }
 
+  const AdminRoute = ({ children }) => {
+    if (!session || userRole !== 'admin') {
+      return <Navigate to={session ? "/dashboard" : "/login"} replace />;
+    }
+    return <AdminLayout>{children}</AdminLayout>;
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <Routes>
@@ -155,41 +164,45 @@ function AppContent() {
           path="/profile-setup" 
           element={session ? <ProfileSetup /> : <Navigate to="/login" replace />} 
         />
+        <Route
+          path="/profile-editor"
+          element={session ? <ProfileEditor /> : <Navigate to="/login" replace />}
+        />
         <Route 
           path="/history" 
           element={session ? <AttendanceHistory /> : <Navigate to="/login" replace />} 
         />
         <Route 
           path="/admin" 
-          element={session && userRole === 'admin' ? <AdminPanel /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><AdminPanel /></AdminRoute>}
         />
         <Route 
           path="/admin/users" 
-          element={session && userRole === 'admin' ? <UserManagement /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><UserManagement /></AdminRoute>}
         />
         <Route 
           path="/admin/departments" 
-          element={session && userRole === 'admin' ? <DepartmentManagement /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><DepartmentManagement /></AdminRoute>}
         />
         <Route 
           path="/admin/positions" 
-          element={session && userRole === 'admin' ? <PositionManagement /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><PositionManagement /></AdminRoute>}
         />
         <Route 
           path="/admin/salary-payment" 
-          element={session && userRole === 'admin' ? <SalaryPaymentManagement /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><SalaryPaymentManagement /></AdminRoute>}
         />
         <Route 
           path="/admin/location" 
-          element={session && userRole === 'admin' ? <LocationSettings /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><LocationSettings /></AdminRoute>}
         />
         <Route 
           path="/admin/bank" 
-          element={session && userRole === 'admin' ? <BankManagement /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><BankManagement /></AdminRoute>}
         />
         <Route 
           path="/admin/attendance" 
-          element={session && userRole === 'admin' ? <AttendanceManagementByDate /> : <Navigate to={session ? "/dashboard" : "/login"} replace />} 
+          element={<AdminRoute><AttendanceManagementByDate /></AdminRoute>}
         />
         <Route 
           path="/" 

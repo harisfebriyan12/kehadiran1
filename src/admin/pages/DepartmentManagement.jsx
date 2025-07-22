@@ -11,20 +11,20 @@ import {
   AlertTriangle,
   Save,
   X,
-  CreditCard,
-  Code
+  Users,
 } from 'lucide-react';
 import { supabase } from '../utils/supabaseClient';
+import Swal from 'sweetalert2';
 import AdminSidebar from '../components/AdminSidebar';
 
-const BankManagement = () => {
+const DepartmentManagement = () => {
   const navigate = useNavigate();
-  const [banks, setBanks] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [contentLoading, setContentLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingBank, setEditingBank] = useState(null);
+  const [editingDepartment, setEditingDepartment] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -32,10 +32,9 @@ const BankManagement = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    bank_name: '',
-    bank_code: '',
-    bank_logo: '',
+    name: '',
     description: '',
+    head_name: '',
     is_active: true
   });
 
@@ -64,7 +63,7 @@ const BankManagement = () => {
 
       setCurrentUser(user);
       setProfile(profile);
-      await fetchBanks();
+      await fetchDepartments();
     } catch (error) {
       console.error('Error checking access:', error);
       navigate('/login');
@@ -73,19 +72,19 @@ const BankManagement = () => {
     }
   };
 
-  const fetchBanks = async () => {
+  const fetchDepartments = async () => {
     setContentLoading(true);
     try {
       const { data, error } = await supabase
-        .from('bank_info')
+        .from('departments')
         .select('*')
-        .order('bank_name');
+        .order('name');
 
       if (error) throw error;
-      setBanks(data || []);
+      setDepartments(data || []);
     } catch (error) {
-      console.error('Error fetching banks:', error);
-      setError('Gagal memuat data bank');
+      console.error('Error fetching departments:', error);
+      setError('Gagal memuat data departemen');
     } finally {
       setContentLoading(false);
     }
@@ -101,13 +100,12 @@ const BankManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      bank_name: '',
-      bank_code: '',
-      bank_logo: '',
+      name: '',
       description: '',
+      head_name: '',
       is_active: true
     });
-    setEditingBank(null);
+    setEditingDepartment(null);
     setShowAddModal(false);
     setError(null);
   };
@@ -116,97 +114,129 @@ const BankManagement = () => {
     e.preventDefault();
     setError(null);
 
-    if (!formData.bank_name.trim()) {
-      setError('Nama bank harus diisi');
+    if (!formData.name.trim()) {
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Nama departemen harus diisi' });
       return;
     }
 
     setContentLoading(true);
     try {
-      const bankData = {
+      const departmentData = {
         ...formData,
         updated_at: new Date().toISOString()
       };
 
-      if (editingBank) {
+      if (editingDepartment) {
         const { error } = await supabase
-          .from('bank_info')
-          .update(bankData)
-          .eq('id', editingBank.id);
+          .from('departments')
+          .update(departmentData)
+          .eq('id', editingDepartment.id);
 
         if (error) throw error;
-        setSuccess('Bank berhasil diperbarui!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'Departemen berhasil diperbarui!',
+        });
       } else {
-        bankData.created_at = new Date().toISOString();
+        departmentData.created_at = new Date().toISOString();
         const { error } = await supabase
-          .from('bank_info')
-          .insert([bankData]);
+          .from('departments')
+          .insert([departmentData]);
 
         if (error) throw error;
-        setSuccess('Bank berhasil ditambahkan!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'Departemen berhasil ditambahkan!',
+        });
       }
 
       resetForm();
-      await fetchBanks();
-      setTimeout(() => setSuccess(null), 3000);
+      await fetchDepartments();
     } catch (error) {
-      console.error('Error saving bank:', error);
-      setError('Gagal menyimpan bank: ' + error.message);
+      console.error('Error saving department:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menyimpan departemen: ' + error.message,
+      });
     } finally {
       setContentLoading(false);
     }
   };
 
-  const handleEdit = (bank) => {
+  const handleEdit = (department) => {
     setFormData({
-      bank_name: bank.bank_name,
-      bank_code: bank.bank_code || '',
-      bank_logo: bank.bank_logo || '',
-      description: bank.description || '',
-      is_active: bank.is_active
+      name: department.name,
+      description: department.description || '',
+      head_name: department.head_name || '',
+      is_active: department.is_active
     });
-    setEditingBank(bank);
+    setEditingDepartment(department);
     setShowAddModal(true);
   };
 
-  const handleDelete = async (bankId) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus bank ini?')) return;
+  const handleDelete = async (departmentId) => {
+    const result = await Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: "Anda tidak akan dapat mengembalikan ini!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    });
+
+    if (!result.isConfirmed) return;
 
     setContentLoading(true);
     try {
-      const { data: employees, error: checkError } = await supabase
-        .from('profiles')
+      const { data: positions, error: checkError } = await supabase
+        .from('positions')
         .select('id')
-        .eq('bank_id', bankId)
+        .eq('department', departments.find(d => d.id === departmentId)?.name)
         .limit(1);
 
       if (checkError) throw checkError;
-      if (employees && employees.length > 0) {
-        setError('Bank tidak dapat dihapus karena masih digunakan oleh karyawan');
+      if (positions && positions.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: 'Departemen tidak dapat dihapus karena masih digunakan oleh jabatan',
+        });
         return;
       }
 
       const { error } = await supabase
-        .from('bank_info')
+        .from('departments')
         .delete()
-        .eq('id', bankId);
+        .eq('id', departmentId);
 
       if (error) throw error;
-      setSuccess('Bank berhasil dihapus!');
-      await fetchBanks();
-      setTimeout(() => setSuccess(null), 3000);
+      Swal.fire(
+        'Dihapus!',
+        'Departemen telah dihapus.',
+        'success'
+      );
+      await fetchDepartments();
     } catch (error) {
-      console.error('Error deleting bank:', error);
-      setError('Gagal menghapus bank: ' + error.message);
+      console.error('Error deleting department:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal menghapus departemen: ' + error.message,
+      });
     } finally {
       setContentLoading(false);
     }
   };
 
-  const filteredBanks = banks.filter(bank => 
-    bank.bank_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (bank.bank_code && bank.bank_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (bank.description && bank.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredDepartments = departments.filter(department => 
+    department.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (department.description && department.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (department.head_name && department.head_name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
@@ -218,7 +248,7 @@ const BankManagement = () => {
             <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
             <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
-          <p className="text-gray-600 mt-4">Memuat data bank...</p>
+          <p className="text-gray-600 mt-4">Memuat data departemen...</p>
         </div>
       </div>
     );
@@ -233,15 +263,15 @@ const BankManagement = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 gap-4">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Kelola Bank</h1>
-                <p className="text-sm text-gray-600">Tambah, edit, dan kelola daftar bank untuk pembayaran gaji</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Kelola Departemen</h1>
+                <p className="text-sm text-gray-600">Tambah, edit, dan kelola departemen perusahaan</p>
               </div>
               <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4" />
-                <span>Tambah Bank</span>
+                <span>Tambah Departemen</span>
               </button>
             </div>
           </div>
@@ -281,8 +311,8 @@ const BankManagement = () => {
                   <Building className="h-5 w-5 text-blue-600" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Total Bank</p>
-                  <p className="text-lg font-bold text-gray-900">{banks.length}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Departemen</p>
+                  <p className="text-lg font-bold text-gray-900">{departments.length}</p>
                 </div>
               </div>
             </div>
@@ -293,8 +323,8 @@ const BankManagement = () => {
                   <CheckCircle className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Bank Aktif</p>
-                  <p className="text-lg font-bold text-gray-900">{banks.filter(b => b.is_active).length}</p>
+                  <p className="text-sm font-medium text-gray-600">Departemen Aktif</p>
+                  <p className="text-lg font-bold text-gray-900">{departments.filter(d => d.is_active).length}</p>
                 </div>
               </div>
             </div>
@@ -302,11 +332,11 @@ const BankManagement = () => {
             <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 text-purple-600" />
+                  <Users className="h-5 w-5 text-purple-600" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Pembayaran</p>
-                  <p className="text-lg font-bold text-gray-900">Transfer Bank</p>
+                  <p className="text-sm font-medium text-gray-600">Dengan Kepala</p>
+                  <p className="text-lg font-bold text-gray-900">{departments.filter(d => d.head_name).length}</p>
                 </div>
               </div>
             </div>
@@ -318,7 +348,7 @@ const BankManagement = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Cari bank..."
+                  placeholder="Cari departemen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -332,7 +362,7 @@ const BankManagement = () => {
               <div className="flex items-center space-x-2">
                 <Building className="h-5 w-5 text-blue-600" />
                 <h2 className="text-base font-medium text-gray-900">
-                  Daftar Bank ({filteredBanks.length})
+                  Daftar Departemen ({filteredDepartments.length})
                 </h2>
               </div>
             </div>
@@ -345,13 +375,13 @@ const BankManagement = () => {
                   <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                 </div>
               </div>
-            ) : filteredBanks.length === 0 ? (
+            ) : filteredDepartments.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Building className="h-8 w-8 text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-lg mb-2">Tidak ada bank ditemukan</p>
-                <p className="text-gray-400">Coba sesuaikan pencarian atau tambah bank baru</p>
+                <p className="text-gray-500 text-lg mb-2">Tidak ada departemen ditemukan</p>
+                <p className="text-gray-400">Coba sesuaikan pencarian atau tambah departemen baru</p>
               </div>
             ) : (
               <>
@@ -359,13 +389,13 @@ const BankManagement = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nama Bank
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kode Bank
+                        Nama Departemen
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Deskripsi
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kepala Departemen
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
@@ -376,51 +406,49 @@ const BankManagement = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredBanks.map((bank) => (
-                      <tr key={bank.id} className="hover:bg-gray-50">
+                    {filteredDepartments.map((department) => (
+                      <tr key={department.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              {bank.bank_logo ? (
-                                <img src={bank.bank_logo} alt={bank.bank_name} className="h-6 w-6 object-contain" />
-                              ) : (
-                                <Building className="h-4 w-4 text-blue-600" />
-                              )}
+                              <Building className="h-4 w-4 text-blue-600" />
                             </div>
                             <div className="text-sm font-medium text-gray-900">
-                              {bank.bank_name}
+                              {department.name}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex items-center space-x-2">
-                            <Code className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm text-gray-900">{bank.bank_code || '-'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900 max-w-xs truncate">
-                          {bank.description || '-'}
+                          {department.description || '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center space-x-2">
+                            <Users className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-900">
+                              {department.head_name || 'Belum diatur'}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                            bank.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            department.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                           }`}>
-                            {bank.is_active ? 'Aktif' : 'Tidak Aktif'}
+                            {department.is_active ? 'Aktif' : 'Tidak Aktif'}
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <button
-                              onClick={() => handleEdit(bank)}
+                              onClick={() => handleEdit(department)}
                               className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
-                              title="Edit Bank"
+                              title="Edit Departemen"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
                             <button
-                              onClick={() => handleDelete(bank.id)}
+                              onClick={() => handleDelete(department.id)}
                               className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
-                              title="Hapus Bank"
+                              title="Hapus Departemen"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -432,33 +460,29 @@ const BankManagement = () => {
                 </table>
 
                 <div className="md:hidden p-4 space-y-4">
-                  {filteredBanks.map((bank) => (
-                    <div key={bank.id} className="bg-white rounded-lg shadow-md p-4">
+                  {filteredDepartments.map((department) => (
+                    <div key={department.id} className="bg-white rounded-lg shadow-md p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            {bank.bank_logo ? (
-                              <img src={bank.bank_logo} alt={bank.bank_name} className="h-6 w-6 object-contain" />
-                            ) : (
-                              <Building className="h-4 w-4 text-blue-600" />
-                            )}
+                            <Building className="h-4 w-4 text-blue-600" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{bank.bank_name}</p>
-                            {bank.description && (
-                              <p className="text-xs text-gray-500 line-clamp-2">{bank.description}</p>
+                            <p className="text-sm font-medium text-gray-900">{department.name}</p>
+                            {department.description && (
+                              <p className="text-xs text-gray-500 line-clamp-2">{department.description}</p>
                             )}
                           </div>
                         </div>
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleEdit(bank)}
+                            onClick={() => handleEdit(department)}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => handleDelete(bank.id)}
+                            onClick={() => handleDelete(department.id)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -466,13 +490,13 @@ const BankManagement = () => {
                         </div>
                       </div>
                       <div className="mt-2 text-sm text-gray-700 space-y-1">
-                        <p><span className="font-medium">Kode Bank:</span> {bank.bank_code || '-'}</p>
+                        <p><span className="font-medium">Kepala:</span> {department.head_name || 'Belum diatur'}</p>
                         <p>
                           <span className="font-medium">Status:</span>{' '}
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                            bank.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            department.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                           }`}>
-                            {bank.is_active ? 'Aktif' : 'Tidak Aktif'}
+                            {department.is_active ? 'Aktif' : 'Tidak Aktif'}
                           </span>
                         </p>
                       </div>
@@ -491,7 +515,7 @@ const BankManagement = () => {
             <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  {editingBank ? 'Edit Bank' : 'Tambah Bank Baru'}
+                  {editingDepartment ? 'Edit Departemen' : 'Tambah Departemen Baru'}
                 </h2>
                 <button
                   onClick={resetForm}
@@ -503,66 +527,50 @@ const BankManagement = () => {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-3">Informasi Bank</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <h3 className="font-medium text-gray-900 mb-3">Informasi Departemen</h3>
+                  <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nama Bank *
+                        Nama Departemen *
                       </label>
                       <input
                         type="text"
-                        name="bank_name"
-                        value={formData.bank_name}
+                        name="name"
+                        value={formData.name}
                         onChange={handleInputChange}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        placeholder="Contoh: BCA, Mandiri, BNI"
+                        placeholder="Contoh: IT, HR, Finance"
                       />
                     </div>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Kode Bank
+                        Deskripsi
+                      </label>
+                      <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        placeholder="Deskripsi singkat tentang departemen..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Kepala Departemen
                       </label>
                       <input
                         type="text"
-                        name="bank_code"
-                        value={formData.bank_code}
+                        name="head_name"
+                        value={formData.head_name}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        placeholder="Contoh: 014, 008, 009"
+                        placeholder="Nama kepala departemen"
                       />
                     </div>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      URL Logo Bank
-                    </label>
-                    <input
-                      type="text"
-                      name="bank_logo"
-                      value={formData.bank_logo}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      placeholder="https://example.com/logo.png"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Masukkan URL gambar logo bank (opsional)
-                    </p>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Deskripsi
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      placeholder="Deskripsi singkat tentang bank..."
-                    />
                   </div>
                 </div>
 
@@ -575,7 +583,7 @@ const BankManagement = () => {
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <label className="ml-2 block text-sm text-gray-900">
-                    Bank aktif
+                    Departemen aktif
                   </label>
                 </div>
 
@@ -594,7 +602,7 @@ const BankManagement = () => {
                   >
                     <div className="flex items-center justify-center space-x-2">
                       <Save className="h-4 w-4" />
-                      <span>{editingBank ? 'Perbarui Bank' : 'Simpan Bank'}</span>
+                      <span>{editingDepartment ? 'Perbarui Departemen' : 'Simpan Departemen'}</span>
                     </div>
                   </button>
                 </div>
@@ -607,4 +615,4 @@ const BankManagement = () => {
   );
 };
 
-export default BankManagement;
+export default DepartmentManagement;

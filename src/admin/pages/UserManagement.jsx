@@ -679,43 +679,39 @@ const UserManagement = () => {
 
           <div className="bg-white rounded-lg shadow-md mb-6">
             <div className="p-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Cari berdasarkan nama, email, atau ID karyawan..."
+                      placeholder="Cari pengguna..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="w-full sm:w-40">
-                    <select
-                      value={filterDepartment}
-                      onChange={(e) => setFilterDepartment(e.target.value)}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    >
-                      <option value="">Semua Departemen</option>
-                      {getDepartments().map(dept => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="w-full sm:w-40">
-                    <select
-                      value={filterRole}
-                      onChange={(e) => setFilterRole(e.target.value)}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    >
-                      <option value="">Semua Role</option>
-                      <option value="karyawan">Karyawan</option>
-                      <option value="admin">Administrator</option>
-                    </select>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:col-span-2">
+                  <select
+                    value={filterDepartment}
+                    onChange={(e) => setFilterDepartment(e.target.value)}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  >
+                    <option value="">Semua Departemen</option>
+                    {getDepartments().map(dept => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={filterRole}
+                    onChange={(e) => setFilterRole(e.target.value)}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  >
+                    <option value="">Semua Role</option>
+                    <option value="karyawan">Karyawan</option>
+                    <option value="admin">Administrator</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -749,163 +745,165 @@ const UserManagement = () => {
               </div>
             ) : (
               <>
-                <table className="min-w-full divide-y divide-gray-200 hidden md:table">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Pengguna
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Jabatan & Departemen
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Gaji
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kontak
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Role & Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              {user.avatar_url ? (
-                                <img 
-                                  src={user.avatar_url} 
-                                  alt={user.name}
-                                  className="w-8 h-8 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getRoleColor(user.role)}`}>
-                                  {getRoleIcon(user.role)}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Pengguna
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Jabatan & Departemen
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Gaji
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Kontak
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Role & Status
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Aksi
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredUsers.map((user) => (
+                        <tr key={user.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                {user.avatar_url ? (
+                                  <img
+                                    src={user.avatar_url}
+                                    alt={user.name}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getRoleColor(user.role)}`}>
+                                    {getRoleIcon(user.role)}
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  <span
+                                    className="cursor-pointer text-blue-700 hover:underline"
+                                    onClick={() => { setProfile(user); setShowProfileModal(true); }}
+                                  >
+                                    {user.name}
+                                  </span>
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  ID: {user.employee_id || 'Belum diatur'}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.positions?.name_id || user.title || getRoleDisplayName(user.role)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {user.positions?.department || user.department || 'Belum diatur'}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {formatCurrency(user.positions?.base_salary || user.salary || 0)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              per bulan
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm text-gray-900 flex items-center">
+                              <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                              <span
+                                className="cursor-pointer text-blue-700 hover:underline"
+                                onClick={() => { setProfile(user); setShowProfileModal(true); }}
+                              >
+                                {user.email}
+                              </span>
+                            </div>
+                            {user.phone && (
+                              <div className="text-sm text-gray-500 flex items-center mt-1">
+                                <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                                {user.phone}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="space-y-1">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                                {user.role === 'admin' && <Shield className="h-3 w-3 mr-1" />}
+                                {getRoleDisplayName(user.role)}
+                              </span>
+                              <div className="text-xs text-gray-500">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                                  {user.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                              </div>
+                              {user.bank_info && (
+                                <div className="text-xs text-gray-500">
+                                  <span className="text-blue-600">Bank: {user.bank_info.bank_name}</span>
                                 </div>
                               )}
                             </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
-                                <span 
-                                  className="cursor-pointer text-blue-700 hover:underline" 
-                                  onClick={() => { setProfile(user); setShowProfileModal(true); }}
-                                >
-                                  {user.name}
-                                </span>
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                ID: {user.employee_id || 'Belum diatur'}
-                              </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              {canManageUser(user.id) ? (
+                                <>
+                                  <button
+                                    onClick={() => handleEditUser(user)}
+                                    className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
+                                    title="Edit User"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleOpenPasswordModal(user)}
+                                    className="text-yellow-600 hover:text-yellow-900 p-1 hover:bg-yellow-50 rounded"
+                                    title="Reset Password"
+                                  >
+                                    <Lock className="h-4 w-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleToggleStatus(user.id, user.status, user.name)}
+                                    className="text-purple-600 hover:text-purple-900 p-1 hover:bg-purple-50 rounded"
+                                    title={user.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
+                                  >
+                                    {user.status === 'active' ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="text-gray-400 text-xs">Akun Anda</span>
+                              )}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.positions?.name_id || user.title || getRoleDisplayName(user.role)}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {user.positions?.department || user.department || 'Belum diatur'}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {formatCurrency(user.positions?.base_salary || user.salary || 0)}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            per bulan
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 flex items-center">
-                            <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                            <span 
-                              className="cursor-pointer text-blue-700 hover:underline" 
-                              onClick={() => { setProfile(user); setShowProfileModal(true); }}
-                            >
-                              {user.email}
-                            </span>
-                          </div>
-                          {user.phone && (
-                            <div className="text-sm text-gray-500 flex items-center mt-1">
-                              <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                              {user.phone}
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="space-y-1">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                              {user.role === 'admin' && <Shield className="h-3 w-3 mr-1" />}
-                              {getRoleDisplayName(user.role)}
-                            </span>
-                            <div className="text-xs text-gray-500">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                                {user.status === 'active' ? 'Aktif' : 'Nonaktif'}
-                              </span>
-                            </div>
-                            {user.bank_info && (
-                              <div className="text-xs text-gray-500">
-                                <span className="text-blue-600">Bank: {user.bank_info.bank_name}</span>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            {canManageUser(user.id) ? (
-                              <>
-                                <button
-                                  onClick={() => handleEditUser(user)}
-                                  className="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded"
-                                  title="Edit User"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleOpenPasswordModal(user)}
-                                  className="text-yellow-600 hover:text-yellow-900 p-1 hover:bg-yellow-50 rounded"
-                                  title="Reset Password"
-                                >
-                                  <Lock className="h-4 w-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleToggleStatus(user.id, user.status, user.name)}
-                                  className="text-purple-600 hover:text-purple-900 p-1 hover:bg-purple-50 rounded"
-                                  title={user.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
-                                >
-                                  {user.status === 'active' ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-                                </button>
-                              </>
-                            ) : (
-                              <span className="text-gray-400 text-xs">Akun Anda</span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
                 <div className="md:hidden p-4 space-y-4">
                   {filteredUsers.map((user) => (
-                    <div key={user.id} className="bg-white rounded-lg shadow-md p-5 border border-gray-100 transition-transform transform hover:scale-[1.02]">
-                      <div className="flex items-center justify-between mb-4">
+                    <div key={user.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-100 transition-transform transform hover:scale-[1.02]">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                             {user.avatar_url ? (
                               <img 
                                 src={user.avatar_url} 
                                 alt={user.name}
-                                className="w-12 h-12 rounded-full object-cover"
+                                className="w-10 h-10 rounded-full object-cover"
                               />
                             ) : (
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${getRoleColor(user.role)}`}>
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getRoleColor(user.role)}`}>
                                 {getRoleIcon(user.role)}
                               </div>
                             )}
@@ -922,53 +920,46 @@ const UserManagement = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1">
                           {canManageUser(user.id) ? (
                             <>
                               <button
                                 onClick={() => handleEditUser(user)}
                                 className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50"
                               >
-                                <Edit className="h-6 w-6" />
+                                <Edit className="h-5 w-5" />
                               </button>
                               <button
                                 onClick={() => handleOpenPasswordModal(user)}
                                 className="text-yellow-600 hover:text-yellow-900 p-2 rounded-full hover:bg-yellow-50"
                               >
-                                <Lock className="h-6 w-6" />
+                                <Lock className="h-5 w-5" />
                               </button>
                               <button
                                 onClick={() => handleToggleStatus(user.id, user.status, user.name)}
                                 className="text-purple-600 hover:text-purple-900 p-2 rounded-full hover:bg-purple-50"
                               >
-                                {user.status === 'active' ? <ToggleRight className="h-6 w-6" /> : <ToggleLeft className="h-6 w-6" />}
+                                {user.status === 'active' ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
                               </button>
                             </>
                           ) : (
-                            <span className="text-gray-400 text-sm">Akun Anda</span>
+                            <span className="text-gray-400 text-xs self-center">Akun Anda</span>
                           )}
                         </div>
                       </div>
-                      <div className="text-sm text-gray-700 space-y-2">
-                        <p><span className="font-medium">ID:</span> {user.employee_id || 'Belum diatur'}</p>
-                        <p><span className="font-medium">Departemen:</span> {user.positions?.department || user.department || 'Belum diatur'}</p>
-                        <p><span className="font-medium">Gaji:</span> {formatCurrency(user.positions?.base_salary || user.salary || 0)}</p>
-                        <p><span className="font-medium">Email:</span> {user.email}</p>
-                        {user.phone && <p><span className="font-medium">Telepon:</span> {user.phone}</p>}
-                        <p>
-                          <span className="font-medium">Role:</span>{' '}
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                            {user.role === 'admin' && <Shield className="h-4 w-4 mr-1" />}
+                      <div className="text-sm text-gray-700 space-y-2 border-t pt-3 mt-3">
+                        <p><strong>ID:</strong> {user.employee_id || 'N/A'}</p>
+                        <p><strong>Departemen:</strong> {user.positions?.department || user.department || 'N/A'}</p>
+                        <p><strong>Gaji:</strong> {formatCurrency(user.positions?.base_salary || user.salary || 0)}</p>
+                        <p><strong>Email:</strong> {user.email}</p>
+                        <div className="flex items-center justify-between">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
                             {getRoleDisplayName(user.role)}
                           </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">Status:</span>{' '}
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
                             {user.status === 'active' ? 'Aktif' : 'Nonaktif'}
                           </span>
-                        </p>
-                        {user.bank_info && <p><span className="font-medium">Bank:</span> {user.bank_info.bank_name}</p>}
+                        </div>
                       </div>
                     </div>
                   ))}
