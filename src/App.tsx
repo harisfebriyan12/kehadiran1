@@ -32,7 +32,7 @@ const AppContent = () => {
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const getSession = async () => {
@@ -106,6 +106,13 @@ const AppContent = () => {
     return children;
   };
 
+  const WildcardRedirect = () => {
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      return null;
+    }
+    return <Navigate to="/" replace />;
+  };
+
   return (
     <Routes>
       <Route path="/login" element={session ? <Navigate to={userRole === 'admin' ? '/admin' : '/dashboard'} /> : <Login />} />
@@ -118,7 +125,6 @@ const AppContent = () => {
 
       <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
-      <Route path="/admin/departments" element={<AdminRoute><DepartmentManagement /></AdminRoute>} />
       <Route path="/admin/positions" element={<AdminRoute><PositionManagement /></AdminRoute>} />
       <Route path="/admin/salary-payment" element={<AdminRoute><SalaryPaymentManagement /></AdminRoute>} />
       <Route path="/admin/location" element={<AdminRoute><LocationSettings /></AdminRoute>} />
@@ -126,7 +132,7 @@ const AppContent = () => {
       <Route path="/admin/attendance" element={<AdminRoute><AttendanceManagementByDate /></AdminRoute>} />
 
       <Route path="/" element={<Navigate to={!session ? '/login' : userRole === 'admin' ? '/admin' : '/dashboard'} replace />} />
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<WildcardRedirect />} />
     </Routes>
   );
 };
