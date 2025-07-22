@@ -1,0 +1,18 @@
+body.dark-mode {
+    background-color: var(--secondary-color-dark);
+    color: var(--text-color-dark);
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+}
+
+.dark-mode th, .dark-mode td {
+    border-color: #333;
+}
+
+.dark-mode h1, .dark-mode h2 {
+    color: var(--primary-color-dark);
+}
