@@ -4,7 +4,7 @@ import { Clock, MapPin, Camera, CheckCircle, AlertCircle, User, Edit, Bell, XCir
 import { supabase, getOfficeLocation, getCameraVerificationSettings } from '../../utils/supabaseClient';
 import { processImageUrl, compareFaceFingerprints } from '../../utils/customFaceRecognition';
 import CustomFaceCapture from './CustomFaceCapture';
-import LocationValidator from './LocationValidator';
+import LocationValidator from '../../components/LocationValidator';
 
 const AttendanceForm = ({ user, onAttendanceSubmitted, todayAttendance = [] }) => {
   const [attendanceType, setAttendanceType] = useState('masuk');

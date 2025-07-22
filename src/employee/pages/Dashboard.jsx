@@ -6,10 +6,10 @@ import {
   AlertTriangle, Settings, Camera, Edit, DollarSign, 
   Bell, ChevronLeft, ChevronRight, CalendarDays, CreditCard
 } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import AttendanceForm from '../components/AttendanceForm';
-import NotificationSystem from '../components/NotificationSystem';
-import { getCameraVerificationSettings } from '../utils/supabaseClient';
+import NotificationSystem from '../../components/NotificationSystem';
+import { getCameraVerificationSettings } from '../../utils/supabaseClient';
 import ReactCalendar from 'react-calendar';
 import { format, isToday, isWeekend, startOfMonth, endOfMonth } from 'date-fns';
 import { id } from 'date-fns/locale';

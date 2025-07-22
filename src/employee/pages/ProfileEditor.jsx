@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { XCircle, Camera, User, CreditCard, Lock } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 
 const ProfileEditor = ({ user, profile, onClose }) => {
   const [activeTab, setActiveTab] = useState('face');
