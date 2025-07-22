@@ -70,26 +70,26 @@ const AdminSidebar = ({ user, profile, isCollapsed, setIsCollapsed }) => {
           icon: <Database className="h-5 w-5" />,
           path: '/admin/bank',
           active: location.pathname === '/admin/bank'
+        },
+        {
+          title: 'Kelola Absensi',
+          icon: <Calendar className="h-5 w-5" />,
+          path: '/admin/attendance',
+          active: location.pathname === '/admin/attendance'
+        },
+        {
+          title: 'Kelola Pembayaran',
+          icon: <CreditCard className="h-5 w-5" />,
+          path: '/admin/salary-payment',
+          active: location.pathname === '/admin/salary-payment'
+        },
+        {
+          title: 'Lokasi Kantor',
+          icon: <MapPin className="h-5 w-5" />,
+          path: '/admin/location',
+          active: location.pathname === '/admin/location'
         }
       ]
-    },
-    {
-      title: 'Kelola Absensi',
-      icon: <Calendar className="h-5 w-5" />,
-      path: '/admin/attendance',
-      active: location.pathname === '/admin/attendance'
-    },
-    {
-      title: 'Kelola Pembayaran',
-      icon: <CreditCard className="h-5 w-5" />,
-      path: '/admin/salary-payment',
-      active: location.pathname === '/admin/salary-payment'
-    },
-    {
-      title: 'Lokasi Kantor',
-      icon: <MapPin className="h-5 w-5" />,
-      path: '/admin/location',
-      active: location.pathname === '/admin/location'
     }
   ];
 

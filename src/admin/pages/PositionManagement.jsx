@@ -29,8 +29,6 @@ const PositionManagement = () => {
   const [filterDepartment, setFilterDepartment] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingPosition, setEditingPosition] = useState(null);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
@@ -141,21 +139,20 @@ const PositionManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
 
     // Validation
     if (!formData.name_id.trim() || !formData.name_en.trim()) {
-      setError('Nama jabatan (Indonesia dan English) harus diisi');
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Nama jabatan (Indonesia dan English) harus diisi' });
       return;
     }
 
     if (!formData.department) {
-      setError('Departemen harus dipilih');
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Departemen harus dipilih' });
       return;
     }
 
     if (formData.min_salary > formData.max_salary) {
-      setError('Gaji minimum tidak boleh lebih besar dari gaji maksimum');
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gaji minimum tidak boleh lebih besar dari gaji maksimum' });
       return;
     }
 
@@ -182,7 +179,7 @@ const PositionManagement = () => {
           .eq('id', editingPosition.id);
 
         if (error) throw error;
-        setSuccess('Jabatan berhasil diperbarui!');
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Jabatan berhasil diperbarui!' });
       } else {
         // Create new position
         positionData.created_at = new Date().toISOString();
@@ -192,18 +189,15 @@ const PositionManagement = () => {
           .insert([positionData]);
 
         if (error) throw error;
-        setSuccess('Jabatan berhasil ditambahkan!');
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Jabatan berhasil ditambahkan!' });
       }
 
       resetForm();
       await fetchPositions();
 
-      // Auto-hide success message
-      setTimeout(() => setSuccess(null), 3000);
-
     } catch (error) {
       console.error('Error saving position:', error);
-      setError('Gagal menyimpan jabatan: ' + error.message);
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal menyimpan jabatan: ' + error.message });
     } finally {
       setContentLoading(false);
     }
@@ -238,7 +232,6 @@ const PositionManagement = () => {
     });
 
     if (!result.isConfirmed) {
-      Swal.fire('Dibatalkan', 'Jabatan tidak dihapus.', 'info');
       return;
     }
 
@@ -254,7 +247,7 @@ const PositionManagement = () => {
       if (checkError) throw checkError;
 
       if (employees && employees.length > 0) {
-        setError('Jabatan tidak dapat dihapus karena masih digunakan oleh karyawan');
+        Swal.fire({ icon: 'error', title: 'Gagal', text: 'Jabatan tidak dapat dihapus karena masih digunakan oleh karyawan' });
         return;
       }
 
@@ -264,14 +257,12 @@ const PositionManagement = () => {
       .eq('id', positionId);
   
       if (error) throw error;
+      Swal.fire('Dihapus!', 'Jabatan telah dihapus.', 'success');
       await fetchPositions();
-
-      // Auto-hide success message
-      setTimeout(() => setSuccess(null), 3000);
 
     } catch (error) {
       console.error('Error deleting position:', error);
-      setError('Gagal menghapus jabatan: ' + error.message);
+      Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal menghapus jabatan: ' + error.message });
     } finally {
       setContentLoading(false);
     }
