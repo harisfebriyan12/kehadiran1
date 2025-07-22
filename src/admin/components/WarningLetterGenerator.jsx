@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Swal from '../../utils/swal';
 import { FileText, Download, Send, X, AlertTriangle, Save, Printer, Mail } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 

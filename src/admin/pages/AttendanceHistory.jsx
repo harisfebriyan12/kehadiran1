@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Filter, Download, CheckCircle, XCircle, AlertTriangle, Users, Search, RefreshCw, MapPin } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
-import Swal from './swal';
+import { supabase } from '../../utils/supabaseClient';
+import Swal from '../../utils/swal';
 
 const AttendanceHistory = () => {
   const navigate = useNavigate();

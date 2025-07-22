@@ -17,7 +17,7 @@ import {
   Link,
   ExternalLink
 } from 'lucide-react';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import AdminSidebar from '../components/AdminSidebar';
 
 const BankManagement = () => {
