@@ -1,0 +1,18 @@
+body {
+    background-color: var(--secondary-color-light);
+    color: var(--text-color-light);
+}
+
+.card {
+    background-color: var(--secondary-color-light);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
+
+th, td {
+    border-color: #ddd;
+}
+
+h1, h2 {
+    color: var(--primary-color-light);
+}
