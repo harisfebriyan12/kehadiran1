@@ -132,25 +132,6 @@ const AdminPanel = () => {
         !checkedInToday.includes(emp.id) && emp.role !== 'admin'
       ) || [];
 
-      if (absentToday.length > 0) {
-        const absentRecords = absentToday.map(emp => ({
-          user_id: emp.id,
-          type: 'absent',
-          timestamp: new Date().toISOString(),
-          status: 'tidak_hadir',
-          notes: 'Tidak hadir - tidak melakukan absensi masuk',
-          is_late: false,
-          late_minutes: 0,
-          work_hours: 0
-        }));
-
-        await supabase
-          .from('attendance')
-          .upsert(absentRecords, { 
-            onConflict: 'user_id,timestamp',
-            ignoreDuplicates: true 
-          });
-      }
 
       const lateToday = todayAttendanceData
         ?.filter(record => record.type === 'masuk' && record.is_late) || [];
@@ -448,7 +429,7 @@ const AdminPanel = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
             <StatCard
               icon={Users}
               title="Karyawan"
