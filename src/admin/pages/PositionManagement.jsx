@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Swal from 'sweetalert2';
 import { Clock, MapPin, Camera, CheckCircle, AlertCircle, User, Edit, Bell, XCircle, Info } from 'lucide-react';
 import Swal from '../../utils/swal';
-import { supabase } from '../../utils/supabaseClient';
-import { supabase, getOfficeLocation, getCameraVerificationSettings } from '../utils/supabaseClient';
-import { processImageUrl, compareFaceFingerprints } from '../utils/customFaceRecognition';
-import CustomFaceCapture from './CustomFaceCapture';
-import LocationValidator from './LocationValidator';
+import { supabase, getOfficeLocation, getCameraVerificationSettings } from '../../utils/supabaseClient';
+import { processImageUrl, compareFaceFingerprints } from '../../utils/customFaceRecognition';
+import CustomFaceCapture from '../../components/CustomFaceCapture';
+import LocationValidator from '../../components/LocationValidator';
 
 const AttendanceForm = ({ user, onAttendanceSubmitted, todayAttendance = [] }) => {
   const [attendanceType, setAttendanceType] = useState('masuk');

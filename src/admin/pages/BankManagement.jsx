@@ -15,7 +15,7 @@ import {
   Code
 } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { supabase } from '../utils/supabaseClient';
+import { supabase } from '../../utils/supabaseClient';
 import AdminSidebar from '../components/AdminSidebar';
 
 const BankManagement = () => {

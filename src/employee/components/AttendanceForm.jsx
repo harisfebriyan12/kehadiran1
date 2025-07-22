@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import { Clock, MapPin, Camera, CheckCircle, AlertCircle, User, Edit, Bell, XCircle, Info } from 'lucide-react';
 import { supabase, getOfficeLocation, getCameraVerificationSettings } from '../../utils/supabaseClient';
 import { processImageUrl, compareFaceFingerprints } from '../../utils/customFaceRecognition';
-import CustomFaceCapture from './CustomFaceCapture';
+import CustomFaceCapture from '../../components/CustomFaceCapture';
 import LocationValidator from '../../components/LocationValidator';
 
 const AttendanceForm = ({ user, onAttendanceSubmitted, todayAttendance = [] }) => {
